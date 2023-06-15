@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{titulo}} Vuelo{% endblock %}
+
+{% block body %}
+{{ parent() }}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+<header>
+
+</header>
+
+<section class="pt-150 cuerpo">
+
+<div class="col-lg-3 col-md-6 col-8 offset-4 border borderradius bg-secondary">
+<h1 class="text-center text-primary">{{titulo}} Vuelo</h1>
+    {{ form_start(nuevovueloForm) }}
+        {{ form_row(nuevovueloForm.avion) }}
+        {{ form_row(nuevovueloForm.ruta) }}
+        {{ form_row(nuevovueloForm.fecha_salida) }}
+        {{ form_row(nuevovueloForm.fecha_llegada) }}
+        {{ form_row(nuevovueloForm.precio_base) }}
+        {{ form_row(nuevovueloForm.estado) }}
+        <button type="submit" class="btn btn-primary mb-3">{{titulo}}</button>
+        <a href="/admin/listavuelo/1" class="float-right">Volver</a>
+    {{ form_end(nuevovueloForm) }}
+
+</div>
+
+</section>
+{% endblock %}

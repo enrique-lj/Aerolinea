@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Resumen Reserva{% endblock %}
+
+{% block body %}
+{{ parent() }}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+<header>
+
+</header>
+
+<section class="pt-100 cuerpo  d-flex flex-column">
+<h2 class="text-center colorblack">RESUMEN DE LA RESERVA</h2>
+<article class="cuadroresumen pt-100  d-flex">
+    <article class="cuadroresumen col-lg-4 offset-lg-2">
+        <h3>Vuelo Ida</h3>
+        <h3>{{vueloida.ruta}}</h3>
+        <h3>Fecha de Salida: {{vueloida.fecha_salida|date('Y-m-d H:i')}}</h3>
+        <h3>Fecha de Llegada: {{vueloida.fecha_llegada|date('Y-m-d H:i')}}</h3>
+        <h3>Avion: {{vueloida.avion.codigo}}</h3>
+        <h3>Asiento: {{asientoelegidoIda.columna}}{{asientoelegidoIda.fila}}</h3>
+        <h3>Clase: {{asientoelegidoIda.clase}}</h3>
+        <h3>Precio Base: {{vueloida.precio_base}}€</h3>
+        </br>
+        <h3>Tarifa: {{tarifa.nombre}}</h3>
+        <h3>Descripcion: {{tarifa.descripcion}}</h3>
+        <h3>Precio Añadido: {{tarifa.precio}}€</h3>
+    </article>
+    <article class="cuadroresumen col-lg-4 offset-lg-1">
+        <h3>Vuelo Vuelta</h3>
+        <h3>{{vuelovuelta.ruta}}</h3>
+        <h3>Fecha de Salida: {{vuelovuelta.fecha_salida|date('Y-m-d H:i')}}</h3>
+        <h3>Fecha de Llegada: {{vuelovuelta.fecha_llegada|date('Y-m-d H:i')}}</h3>
+        <h3>Avion: {{vuelovuelta.avion.codigo}}</h3>
+        <h3>Asiento: {{asientoelegidoVuelta.columna}}{{asientoelegidoVuelta.fila}}</h3>
+        <h3>Clase: {{asientoelegidoVuelta.clase}}</h3>
+        <h3>Precio Base: {{vuelovuelta.precio_base}}€</h3>
+        </br>
+        <h3>Tarifa: {{tarifa.nombre}}</h3>
+        <h3>Descripcion: {{tarifa.descripcion}}</h3>
+        <h3>Precio Añadido: {{tarifa.precio}}€</h3>
+    </article>
+</article>
+<h2 class="pt-50 text-center colorblack">PRECIO TOTAL: {{preciototal}}€</h2>
+
+<div class="mb-50 m-auto ">
+    <form action="/checkout" method="POST">
+        <input type="hidden" name="preciototal" value="{{preciototal}}"></input>
+        <input type="hidden" name="vueloidaid" value="{{vueloida.id}}"></input>
+        <input type="hidden" name="vuelovueltaid" value="{{vuelovuelta.id}}"></input>
+        <input type="hidden" name="asientoidaid" value="{{asientoelegidoIda.id}}"></input>
+        <input type="hidden" name="asientovueltaid" value="{{asientoelegidoVuelta.id}}"></input>
+        <input type="hidden" name="tarifaid" value="{{tarifa.id}}"></input>
+        <button type="submit" class="btn btn-primary colorwhite">REALIZAR PAGO</button>
+    </form>
+<div>
+</section>
+{% endblock %}

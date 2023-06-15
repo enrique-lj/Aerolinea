@@ -1,0 +1,368 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+$(document).ready(function() {
+    vueloIdaSeleccionado = false;
+    idVueloIdaSeleccionado='';
+    idVueloVueltaSeleccionado='';
+    ModeloSeleccionadoIda='';
+    ModeloSeleccionadoVuelta='';
+    AsientoIda='';
+    AsientoVuelta='';
+    Tarifaid='';
+    vueloVueltaSeleccionado = false;
+    $('.cancelar-btn-ida').hide();
+    $('.cancelar-btn-vuelta').hide();
+    $('.errormensajeVuelos').hide();
+    $('.btnVuelta').hide();
+    $('.seleccionar-btn-ida').click(function() {
+       $('.errormensajeVuelos').hide();
+        $(this).siblings('.cancelar-btn-ida').fadeIn();
+        var horaLlegadaSeleccionada = $(this).closest('tr').find('.horallegadaida').text();
+        var fechaLlegadaSeleccionada = new Date('1970-01-01T' + horaLlegadaSeleccionada);
+         $('.filasvuelovuelta').each(function() {
+            var horaSalidaVuelta = $(this).find('.horasalidavuelta').text();
+            var fechaSalidaVuelta = new Date('1970-01-01T' + horaSalidaVuelta);
+            
+            // Si la hora de salida de un vuelo de vuelta es anterior a la hora de llegada del vuelo de ida, se aplica el fondo rojo
+            if (fechaSalidaVuelta < fechaLlegadaSeleccionada) {
+                $(this).find('.seleccionar-btn-vuelta').fadeOut();
+                var idFilaRoja = $(this).attr('id');
+                 if (!vueloVueltaSeleccionado)
+                {
+                   $('#errorVuelta-' + idFilaRoja).css('background-color', 'rgba(255, 0, 0, 0.2)').fadeIn();
+                }
+                
+            }
+        });
+        
+        toggleContinuarButton();
+    });
+
+    $('.seleccionar-btn-vuelta').click(function() {
+        $('.errormensajeVuelos').hide();
+        $(this).siblings('.cancelar-btn-vuelta').fadeIn();
+         var horaSalidaSeleccionada = $(this).closest('tr').find('.horasalidavuelta').text();
+        var fechaSalidaSeleccionada = new Date('1970-01-01T' + horaSalidaSeleccionada);
+         $('.filasvueloida').each(function() {
+            var horaLlegadaida = $(this).find('.horallegadaida').text();
+            var fechaLlegadaida = new Date('1970-01-01T' + horaLlegadaida);
+            
+            // Si la hora de salida de un vuelo de vuelta es anterior a la hora de llegada del vuelo de ida, se aplica el fondo rojo
+            if (fechaLlegadaida > fechaSalidaSeleccionada) {
+                $(this).find('.seleccionar-btn-ida').fadeOut();
+                var idFilaRoja = $(this).attr('id');
+                if (!vueloIdaSeleccionado)
+                {
+                    $('#errorIda-' + idFilaRoja).css('background-color', 'rgba(255, 0, 0, 0.2)').fadeIn();
+                }
+                
+            }
+        });
+        
+        toggleContinuarButton();
+    });
+
+
+    
+});
+
+function seleccionarVueloida(idVuelo,modelo) {
+    
+    $('.seleccionar-btn-ida').hide();
+    
+    $('.filasvueloida').not('#' + idVuelo).fadeOut();
+
+    $('#' + idVuelo).animate({ backgroundColor: '#C8E6C9' }, 1000);
+     vueloIdaSeleccionado = true;
+     idVueloIdaSeleccionado=idVuelo;
+     ModeloSeleccionadoIda=modelo;
+}
+
+function seleccionarVuelovuelta(idVuelo,modelo) {
+   $('.seleccionar-btn-vuelta').hide();
+    
+    $('.filasvuelovuelta').not('#' + idVuelo).fadeOut();
+
+    $('#' + idVuelo).animate({ backgroundColor: '#C8E6C9' }, 1000);
+    vueloVueltaSeleccionado = true;
+    idVueloVueltaSeleccionado=idVuelo;
+    ModeloSeleccionadoVuelta=modelo;
+}
+
+function cancelarSeleccionIda(idVuelo) {
+    $('.cancelar-btn-ida').hide();
+    $('.seleccionar-btn-ida').fadeIn();
+    $('.filasvueloida').not('#' + idVuelo).fadeIn();
+    $('#' + idVuelo).animate({ backgroundColor: 'transparent' }, 1000);
+    $('.errormensajeVuelos').hide();
+     $('.filasvuelovuelta').each(function() {
+         if ($(this).find('.cancelar-btn-vuelta').is(':visible')) 
+         {
+            $(this).find('.seleccionar-btn-vuelta').fadeOut();
+         }
+         else
+         {
+            $(this).find('.seleccionar-btn-vuelta').fadeIn();
+         }
+     });
+     vueloIdaSeleccionado = false;
+     idVueloIdaSeleccionado='';
+     ModeloSeleccionadoIda='';
+     toggleContinuarButton();
+}
+
+function cancelarSeleccionVuelta(idVuelo) {
+    $('.cancelar-btn-vuelta').hide();
+    $('.seleccionar-btn-vuelta').fadeIn();
+    $('.filasvuelovuelta').not('#' + idVuelo).fadeIn();
+    $('#' + idVuelo).animate({ backgroundColor: 'transparent' }, 1000);
+    $('.errormensajeVuelos').hide();
+     $('.filasvueloida').each(function() {
+        if ($(this).find('.cancelar-btn-ida').is(':visible')) 
+         {
+            $(this).find('.seleccionar-btn-ida').fadeOut();
+         }
+         else
+         {
+            $(this).find('.seleccionar-btn-ida').fadeIn();
+         }
+     });
+     vueloVueltaSeleccionado = false;
+     idVueloVueltaSeleccionado='';
+     ModeloSeleccionadoVuelta='';
+     toggleContinuarButton();
+}
+
+function toggleContinuarButton() {
+    if (vueloIdaSeleccionado && vueloVueltaSeleccionado) {
+        $('.marcotarjetatarifa').fadeIn();
+        var nuevoHref = "/elegirasiento/"+idVueloIdaSeleccionado+"/"+idVueloVueltaSeleccionado+"/"+1;
+        $('#tarifabasica').attr('href', nuevoHref);
+    } else {
+        $('.marcotarjetatarifa').fadeOut();
+    }
+}
+
+function asignaAvion(viaje,clase,tarifaid) {
+     Tarifaid=tarifaid;
+     var tabla1="";
+     var tbody1;
+     var thead1;
+     var tabla2="";
+     var tbody2;
+     var thead2; 
+    
+  if (viaje==='ida')
+  {
+    var contenedor=$("#contavion").css('background-image', 'url("../assets/imgs/airbus.png")');
+    $('#tituloavion').text(ModeloSeleccionadoIda);
+    $('#titulomodal').text('Seleccione un Asiento para la Ida');
+    if (ModeloSeleccionadoIda=='Airbus')
+    {
+        montarAirbus($("#contavion"));
+        if(clase=='regular')
+        {
+            asignarAsientos(idVueloIdaSeleccionado);
+        }
+        else if(clase=='business')
+        {
+            asignarAsientosBusiness(idVueloIdaSeleccionado);
+        }
+        
+    }
+    else if (ModeloSeleccionadoIda=='Boeing')
+    {
+        montarBoeing($("#contavion"));
+        if(clase=='regular')
+        {
+            asignarAsientos(idVueloIdaSeleccionado);
+        }
+        else if(clase=='business')
+        {
+            asignarAsientosBusiness(idVueloIdaSeleccionado);
+        }
+    }
+  }
+  else if (viaje==='vuelta')
+  {
+    var contenedor=$("#contavion").css('background-image', 'url("../assets/imgs/boeing.png")');
+    $('#tituloavion').text(ModeloSeleccionadoIda);
+    $('#titulomodal').text('Seleccione un Asiento para la Vuelta');
+    if (ModeloSeleccionadoVuelta=='Airbus')
+    {
+        montarAirbus($("#contavion"));
+          if(clase=='regular')
+        {
+            asignarAsientos(idVueloVueltaSeleccionado);
+        }
+        else if(clase=='business')
+        {
+            asignarAsientosBusiness(idVueloVueltaSeleccionado);
+        }
+    }
+    else if (ModeloSeleccionadoVuelta=='Boeing')
+    {
+        montarBoeing($("#contavion"));
+         if(clase=='regular')
+        {
+            asignarAsientos(idVueloVueltaSeleccionado);
+        }
+        else if(clase=='business')
+        {
+            asignarAsientosBusiness(idVueloVueltaSeleccionado);
+        }
+        
+    }
+  }
+}
+
+function cargaModal()
+{   var btn = $('.btnVuelta').attr('id');
+    const partes = btn.split("-");
+                const variable1 = partes[0];
+                const variable2 = partes[1];
+                const variable3 = partes[2];
+                const variable4 = partes[3];
+    $('#asientoida').attr('id',variable1);
+    $('#columnaida').text(variable3);
+    $('#filaida').text(variable2);
+    $('#exampleModalCenter').fadeOut();
+    $('.tituloavion').text()
+    $('#asientoida').text('');
+    $('#columnaida').text('');
+    $('#filaida').text('');
+    asignaAvion('vuelta',variable4);
+    $('#exampleModalCenter').fadeIn();
+    AsientoVuelta=$('#asientoida').attr('id'); 
+    console.log(idVueloIdaSeleccionado);
+    console.log(idVueloVueltaSeleccionado);
+    console.log(Tarifaid);
+    console.log(AsientoIda);
+    console.log(AsientoVuelta);
+     //$('.btnVueltaa').text('Continuar').attr("href",'/elegirasiento2/"+idVueloIdaSeleccionado+"/"+idVueloVueltaSeleccionado+"/"+Tarifaid+"/"+AsientoIda+"/"+AsientoVuelta');
+}
+
+</script>
+<script src="{{ asset('assets/vendors/jquery/montaraviones.js') }}" type="text/javascript"></script>
+{% endblock %}
+{% block title %}Vuelos{% endblock %}
+
+{% block body %}
+{{ parent() }}
+<header>
+
+</header>
+
+
+<section class="pt-150 cuerpo">
+
+<h2 class="text-center">{{rutaida}}</h2>
+
+<table class="table  table-hover w-50 offset-lg-3 offset-md-1">
+
+<tbody>
+{% for vuelo in vuelosida %}
+{% set duracion = vuelo.fecha_llegada.diff(vuelo.fecha_salida) %}
+<tr id="{{vuelo.id}}" class="filasvueloida tr:hover">
+    <td class="d-none">{{vuelo.id}}</td>
+    <td><img class="logotipomini" src="{{asset('assets/imgs/aires2.png')}}" alt="" title="" /></td>
+    <td><h4>{{vuelo.fecha_salida|date('H:i') }}</h4><br><h4>{{vuelo.ruta.origen}}-{{vuelo.ruta.origen.nombre}}</h4></td>
+    <td>{{vuelo.avion}}<br>-------------------------------------------------------<br>{{duracion|date('%hh %im')}}</td>
+    <td><h4 class="horallegadaida">{{vuelo.fecha_llegada|date('H:i') }}</h4><br><h4>{{vuelo.ruta.destino}}-{{vuelo.ruta.destino.nombre}}</h4></td>
+    <td><h4>{{vuelo.precio_base}}€</h4></td>
+    <td><a id="seleccionar-btn-{{vuelo.id}}" class="btn btn-primary seleccionar-btn-ida colorwhite" onclick="seleccionarVueloida('{{vuelo.id}}','{{vuelo.avion.modelo}}')">Seleccionar</a>
+        <a id="cancelar-btn-{{vuelo.id}}"  class="btn btn-danger cancelar-btn-ida colorwhite" onclick="cancelarSeleccionIda('{{vuelo.id}}')">Cancelar</a></td>
+</tr>
+<tr id="errorIda-{{vuelo.id}}" class="errormensajeVuelos" ><td colspan="7">No se puede este vuelo porque sale despues que su vuelo de vuelta</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+<h2 class="text-center">{{rutavuelta}}</h2>
+
+<table class="table table-hover w-50 offset-lg-3 offset-md-1">
+<tbody>
+{% for vuelo in vuelosvuelta %}
+{% set duracion = vuelo.fecha_llegada.diff(vuelo.fecha_salida) %}
+<tr id="{{vuelo.id}}" class="filasvuelovuelta tr:hover">
+    <td class="d-none">{{vuelo.id}}</td>
+    <td><img class="logotipomini" src="{{asset('assets/imgs/aires2.png')}}" alt="" title="" /></td>
+    <td><h4 class="horasalidavuelta">{{vuelo.fecha_salida|date('H:i') }}</h4><br><h4>{{vuelo.ruta.origen}}-{{vuelo.ruta.origen.nombre}}</h4></td>
+    <td>{{vuelo.avion}}<br>-------------------------------------------------------<br>{{duracion|date('%hh %im')}}</td>
+    <td><h4>{{vuelo.fecha_llegada|date('H:i') }}</h4><br><h4>{{vuelo.ruta.destino}}-{{vuelo.ruta.destino.nombre}}</h4></td>
+    <td><h4>{{vuelo.precio_base}}€</h4></td>
+    <td><a id="seleccionar-btn-{{vuelo.id}}" class="btn btn-primary seleccionar-btn-vuelta colorwhite" onclick="seleccionarVuelovuelta('{{vuelo.id}}','{{vuelo.avion.modelo}}')">Seleccionar</a>
+        <a id="cancelar-btn-{{vuelo.id}}"  class="btn btn-danger cancelar-btn-vuelta colorwhite" onclick="cancelarSeleccionVuelta('{{vuelo.id}}')">Cancelar</a>
+    </td>
+     {# href="/admin/reservarvuelo/{{vuelo.id}}" #}
+</tr>
+<tr id="errorVuelta-{{vuelo.id}}" class="errormensajeVuelos" ><td colspan="7">No se puede este vuelo porque sale antes que su vuelo de salida</td></tr>
+{% endfor %}
+</tbody>
+</table>
+<article class="marcotarjetatarifa col-lg-8 offset-lg-2" style="display: none;">
+<h3  class="text-center colorblack pt-2">Elige una de las tarifas para tu viaje</h3>
+<div class=" d-flex space-between flex-md-wrap pt-2">
+    {% for tarifa in tarifables %}
+    <div class="tarjetatarifa col-lg-2 col-md-2 col-2  d-flex flex-column">
+        <div class="tarjetatarifa-head"><h2 class="text-center">{{tarifa.nombre}}</h2></div>
+        <div class="tarjetatarifa-body colorblack"><h4  class="text-center">{{tarifa.descripcion}}</h4></div>
+        <div class="tarjetatarifa-footer">
+        {% if tarifa.id == 1 %}
+        <a id='tarifabasica' class="btn btn-primary colorwhite btntarifas seleccionartarifa">{{tarifa.precio}}€ más por vuelo</a>
+       {% elseif tarifa.id == 5 %}
+       <a data-toggle="modal" href="#exampleModalCenter" class="btn btn-primary colorwhite btntarifas seleccionartarifa" onclick="asignaAvion('ida','business',{{tarifa.id}})">{{tarifa.precio}}€ más por vuelo</a>
+       {% else %}
+        <a data-toggle="modal" href="#exampleModalCenter" class="btn btn-primary colorwhite seleccionartarifa" onclick="asignaAvion('ida','regular',{{tarifa.id}})">{{tarifa.precio}}€ más por vuelo</a>
+        {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<h4  class="text-center colorblack pt-2">El tipo de tarifa seleccionada se aplica a todos los pasajeros para todos los vuelos</h4>
+</article>
+</section>
+
+ <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content ">
+                    <div class="modal-header">
+                        <span class="close">&times;</span>
+                        <h4 id="titulomodal" class="text-center"></h4>
+                    </div>
+                    <div class="modal-dialog-scrollable modal-body">
+                        <div id="contavion" class="float-left"></div>
+                        <div class="contleyenda float-left">
+                            <h1 id="tituloavion" class=""></h1>
+                            <div  class="leyenda">
+                                <div class="d-flex ">
+                                    <h3 for="codigoavion">Business:</h3>
+                                    <div id="marcobusiness"></div>
+                                </div>
+                                <div class="d-flex">
+                                    <h3 for="codigoavion" class="mt-20">Prioritario:</h3>
+                                    <div id="marcoprioritario"></div>
+                                </div>
+                                <div class="d-flex">
+                                    <h3 for="codigoavion" class="mt-20">Regular:</h3>
+                                    <div id="marcoregular"></div>
+                                </div>
+                            </div>
+                            <div class="leyenda">
+                                <h2 id="asientoida">Asiento</h2>
+                                <h3>Columna:</h3><h3 id="columnaida"></h3>
+                                <h3>Fila:</h3><h3 id="filaida"></h3>
+                            </div>
+                            <div class="btnVuelta mt-150 col-lg-8 offset-lg-2">
+                                <a  class="btnVueltaa btn btn-primary colorwhite" onclick="cargaModal()">Elegir Vuelta...</a>
+                            </div>
+                            
+                        </div> 
+                    </div>    
+                </div> 
+            </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{titulo}} Avión{% endblock %}
+
+{% block body %}
+{{ parent() }}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+<header>
+
+</header>
+
+<section class="pt-150 cuerpo">
+
+<div class="col-lg-3 col-md-6 col-8 offset-4 border borderradius bg-secondary">
+<h1 class="text-center text-primary">{{titulo}} Avión</h1>
+    {{ form_start(nuevoavionForm) }}
+        {{ form_row(nuevoavionForm.codigo) }}
+        {{ form_row(nuevoavionForm.modelo) }}
+        <button type="submit" class="btn btn-primary mb-3">{{titulo}}</button>
+        <a href="/admin/listaavion/1" class="float-right">Volver</a>
+    {{ form_end(nuevoavionForm) }}
+
+</div>
+
+</section>
+{% endblock %}
