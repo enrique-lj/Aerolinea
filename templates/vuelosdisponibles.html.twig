@@ -4,6 +4,18 @@
 {{ parent() }}
 <script>
 $(document).ready(function() {
+
+    idayvuelta=true;
+  
+    if ($('.tipo').attr('id') == 'ida')
+    {
+        idayvuelta=false;
+    }
+    else
+    {
+        idayvuelta=true;
+    }
+   
     vueloIdaSeleccionado = false;
     idVueloIdaSeleccionado='';
     idVueloVueltaSeleccionado='';
@@ -12,11 +24,14 @@ $(document).ready(function() {
     AsientoIda='';
     AsientoVuelta='';
     Tarifaid='';
+    Tarifaid2='';
     vueloVueltaSeleccionado = false;
+    asientoidaconfirmado = false;
     $('.cancelar-btn-ida').hide();
     $('.cancelar-btn-vuelta').hide();
     $('.errormensajeVuelos').hide();
     $('.btnVuelta').hide();
+    $('#btncontinuarvuelta').hide();
     $('.seleccionar-btn-ida').click(function() {
        $('.errormensajeVuelos').hide();
         $(this).siblings('.cancelar-btn-ida').fadeIn();
@@ -137,13 +152,21 @@ function cancelarSeleccionVuelta(idVuelo) {
 }
 
 function toggleContinuarButton() {
-    if (vueloIdaSeleccionado && vueloVueltaSeleccionado) {
-        $('.marcotarjetatarifa').fadeIn();
-        var nuevoHref = "/elegirasiento/"+idVueloIdaSeleccionado+"/"+idVueloVueltaSeleccionado+"/"+1;
-        $('#tarifabasica').attr('href', nuevoHref);
-    } else {
-        $('.marcotarjetatarifa').fadeOut();
-    }
+
+        if ((vueloIdaSeleccionado && vueloVueltaSeleccionado && idayvuelta) || (vueloIdaSeleccionado && !vueloVueltaSeleccionado && !idayvuelta) ) {
+            $('.marcotarjetatarifa').fadeIn();
+            if (idayvuelta)
+            {
+                var nuevoHref = "/elegirasiento2/"+idVueloIdaSeleccionado+"/"+idVueloVueltaSeleccionado+"/"+1;
+            }
+            else
+            {
+                var nuevoHref = "/elegirasiento1/"+idVueloIdaSeleccionado+"/"+1;
+            }
+            $('#tarifabasica').attr('href', nuevoHref);
+        } else {
+            $('.marcotarjetatarifa').fadeOut();
+        }
 }
 
 function asignaAvion(viaje,clase,tarifaid) {
@@ -220,7 +243,8 @@ function asignaAvion(viaje,clase,tarifaid) {
 }
 
 function cargaModal()
-{   var btn = $('.btnVuelta').attr('id');
+{   asientoidaconfirmado = true;
+    var btn = $('.btnVuelta').attr('id');
     const partes = btn.split("-");
                 const variable1 = partes[0];
                 const variable2 = partes[1];
@@ -230,19 +254,45 @@ function cargaModal()
     $('#columnaida').text(variable3);
     $('#filaida').text(variable2);
     $('#exampleModalCenter').fadeOut();
-    $('.tituloavion').text()
+    Tarifaid2 = Tarifaid;
+    
+     $('#btnelecvuelta').hide();
     $('#asientoida').text('');
     $('#columnaida').text('');
     $('#filaida').text('');
     asignaAvion('vuelta',variable4);
     $('#exampleModalCenter').fadeIn();
     AsientoVuelta=$('#asientoida').attr('id'); 
-    console.log(idVueloIdaSeleccionado);
-    console.log(idVueloVueltaSeleccionado);
-    console.log(Tarifaid);
-    console.log(AsientoIda);
-    console.log(AsientoVuelta);
-     //$('.btnVueltaa').text('Continuar').attr("href",'/elegirasiento2/"+idVueloIdaSeleccionado+"/"+idVueloVueltaSeleccionado+"/"+Tarifaid+"/"+AsientoIda+"/"+AsientoVuelta');
+   
+}
+
+function continuarIdayVuelta()
+{
+   
+    $.post({
+            type: "POST",
+            url:"/apiasiento/nuevares2",
+            data: {vueloidaid : idVueloIdaSeleccionado, tarifa : Tarifaid2, asientoidaid : AsientoIda, vuelovueltaid : idVueloVueltaSeleccionado, asientovueltaid : AsientoVuelta},
+                    dataType: "json",
+                    success: function(success)
+                    {
+                    window.location.href = success.data.enlace;
+                    }})
+}
+
+
+function continuar()
+{
+   
+    $.post({
+            type: "POST",
+            url:"/apiasiento/nuevares",
+            data: {vueloidaid : idVueloIdaSeleccionado, tarifa : Tarifaid, asientoid : AsientoIda},
+                    dataType: "json",
+                    success: function(success)
+                    {
+                    window.location.href = success.data.enlace;
+                    }})
 }
 
 </script>
@@ -257,7 +307,7 @@ function cargaModal()
 </header>
 
 
-<section class="pt-150 cuerpo">
+<section id="{{tipo}}" class="pt-150 cuerpo tipo fondoseccion">
 
 <h2 class="text-center">{{rutaida}}</h2>
 
@@ -281,6 +331,7 @@ function cargaModal()
 </tbody>
 </table>
 
+{% if rutavuelta is defined %}
 <h2 class="text-center">{{rutavuelta}}</h2>
 
 <table class="table table-hover w-50 offset-lg-3 offset-md-1">
@@ -303,6 +354,7 @@ function cargaModal()
 {% endfor %}
 </tbody>
 </table>
+{% endif %}
 <article class="marcotarjetatarifa col-lg-8 offset-lg-2" style="display: none;">
 <h3  class="text-center colorblack pt-2">Elige una de las tarifas para tu viaje</h3>
 <div class=" d-flex space-between flex-md-wrap pt-2">
@@ -326,17 +378,18 @@ function cargaModal()
 </article>
 </section>
 
+
  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog  modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content ">
                     <div class="modal-header">
                         <span class="close">&times;</span>
-                        <h4 id="titulomodal" class="text-center"></h4>
+                        
                     </div>
                     <div class="modal-dialog-scrollable modal-body">
                         <div id="contavion" class="float-left"></div>
                         <div class="contleyenda float-left">
-                            <h1 id="tituloavion" class=""></h1>
+                           
                             <div  class="leyenda">
                                 <div class="d-flex ">
                                     <h3 for="codigoavion">Business:</h3>
@@ -356,13 +409,29 @@ function cargaModal()
                                 <h3>Columna:</h3><h3 id="columnaida"></h3>
                                 <h3>Fila:</h3><h3 id="filaida"></h3>
                             </div>
+                            {% if rutavuelta is defined %}
                             <div class="btnVuelta mt-150 col-lg-8 offset-lg-2">
-                                <a  class="btnVueltaa btn btn-primary colorwhite" onclick="cargaModal()">Elegir Vuelta...</a>
+                                <a id="btnelecvuelta"  class="btnVueltaa btn btn-primary colorwhite" onclick="cargaModal()">Elegir Vuelta...</a>
+                                <a id="btncontinuarvuelta"  class="btnVueltaa btn btn-primary colorwhite" onclick="continuarIdayVuelta()">Continuar</a>
                             </div>
-                            
+                             {% else %}
+                             <div class="btnContinuar mt-150 col-lg-8 offset-lg-2">
+                                <a id="btncontinuar" class="btnVueltaa btn btn-primary colorwhite" onclick="continuar()">Continuar</a>
+                            </div>
+                            {% endif %}
                         </div> 
                     </div>    
                 </div> 
             </div>
 </div>
+
+
+{% block footer %}
+       {# <footer class="footer">            
+                <p>Copyright <script>document.write(new Date().getFullYear())</script> &copy; <a href="http://www.devcrud.com">Xokas and co</a></p>
+            </footer>#}
+            <div class="fondoseccion text-center footer-pd">
+                AIRES
+            </div>
+{% endblock %}
 {% endblock %}

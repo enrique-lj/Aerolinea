@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+ {% block stylesheets %}
+        {{ parent() }}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        {% endblock %}
+
+        {% block javascripts %}
+         {{ parent() }}
+         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+        {% endblock %}
+{% block body %} 
+
+<H2>DETALLES DE FACTURACION</h1>
+
+<article class="cuadroresumen pt-100  d-flex">
+    <article class="cuadroresumen col-lg-4 offset-lg-2">
+        <h6>Vuelo Ida</h6>
+        <h6>{{factura1.reserva.vuelo.ruta}}</h6>
+        <h6>Fecha de Salida: {{factura1.reserva.vuelo.fecha_salida|date('Y-m-d H:i')}}</h6>
+        <h6>Fecha de Llegada: {{factura1.reserva.vuelo.fecha_llegada|date('Y-m-d H:i')}}</h6>
+        <h6>Avion: {{factura1.reserva.vuelo.avion.codigo}}</h6>
+        <h6>Asiento: {{factura1.reserva.asiento.columna}}{{factura1.reserva.asiento.fila}}</h6>
+        <h6>Clase: {{factura1.reserva.asiento.clase}}</h6>
+        <h6>Precio Base: {{factura1.reserva.vuelo.precio_base}}€</h6>
+        <h6>Tarifa: {{factura1.tarifables.nombre}}</h6>
+        <h6>Descripcion: {{factura1.tarifables.descripcion}}</h6>
+        <h6>Precio Añadido: {{factura1.tarifables.precio}}€</h6>
+        {% if factura2 is defined %}
+        <h6>Vuelo Vuelta</h6>
+        <h6>{{factura2.reserva.vuelo.ruta}}</h6>
+        <h6>Fecha de Salida: {{factura2.reserva.vuelo.fecha_salida|date('Y-m-d H:i')}}</h6>
+        <h6>Fecha de Llegada: {{factura2.reserva.vuelo.fecha_llegada|date('Y-m-d H:i')}}</h6>
+        <h6>Avion: {{factura2.reserva.vuelo.avion.codigo}}</h6>
+        <h6>Asiento: {{factura2.reserva.asiento.columna}}{{factura2.reserva.asiento.fila}}</h6>
+        <h6>Clase: {{factura2.reserva.asiento.clase}}</h6>
+        <h6>Precio Base: {{factura2.reserva.vuelo.precio_base}}€</h6>
+        <h6>Tarifa: {{factura2.tarifables.nombre}}</h6>
+        <h6>Descripcion: {{factura2.tarifables.descripcion}}</h6>
+        <h6>Precio Añadido: {{factura2.tarifables.precio}}€</h6>
+        {% endif %}
+    </article>
+</article>
+
+<h2 class="pt-50 text-center colorblack">PRECIO TOTAL: {{preciototal}}€</h2>
+
+
+
+{% endblock %}
+{% block footer %}
+
+{% endblock %}

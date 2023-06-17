@@ -27,7 +27,7 @@ class QrCodeGeneratorController extends AbstractController
             ->setMargin(0)
             ->setForegroundColor(new Color(0, 0, 0))
             ->setBackgroundColor(new Color(255, 255, 255));
-        $logo = Logo::create('assets/imgs/logoxocas.png')
+        $logo = Logo::create('assets/imgs/aires2.png')
             ->setResizeToWidth(60);
         $label = Label::create('')->setFont(new NotoSans(8));
  

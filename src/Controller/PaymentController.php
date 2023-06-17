@@ -34,6 +34,26 @@ class PaymentController extends AbstractController
        $asientoidaid=$request->request->get('asientoidaid');
        $asientovueltaid=$request->request->get('asientovueltaid');
        $tarifaid=$request->request->get('tarifaid');
+
+
+       $successUrlParams = [
+        'vueloidaid' => $vueloidaid,
+        'asientoidaid' => $asientoidaid,
+        'tarifaid' => $tarifaid,
+    ];
+
+    if ($vuelovueltaid !== null && $asientovueltaid !== null) {
+        $successUrlParams['vuelovueltaid'] = $vuelovueltaid;
+        $successUrlParams['asientovueltaid'] = $asientovueltaid;
+        $successUrl = $this->generateUrl('finalizareservadoble', $successUrlParams, UrlGeneratorInterface::ABSOLUTE_URL);
+    }   
+    else
+    {
+        $successUrl = $this->generateUrl('finalizareserva', $successUrlParams, UrlGeneratorInterface::ABSOLUTE_URL);
+    }
+       
+    
+
         $session = Session::create([
             'payment_method_types' => ['card'],
             'line_items'           => [
@@ -49,11 +69,7 @@ class PaymentController extends AbstractController
                 ]
             ],
             'mode'                 => 'payment',
-            'success_url'          => $this->generateUrl('finalizareserva', ['vueloidaid' => $vueloidaid,
-                                                                            'vuelovueltaid' => $vuelovueltaid,
-                                                                            'asientoidaid' =>  $asientoidaid,
-                                                                            'asientovueltaid' => $asientovueltaid,
-                                                                            'tarifaid' => $tarifaid,], UrlGeneratorInterface::ABSOLUTE_URL),
+            'success_url'          => $successUrl,
             'cancel_url'           => $this->generateUrl('cancel_url', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 

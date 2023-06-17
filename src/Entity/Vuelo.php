@@ -183,4 +183,9 @@ class Vuelo
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return 'COD'.$this->id;
+    }
 }

@@ -266,22 +266,20 @@ class VuelosController extends AbstractController
         ]);
     }
 
-    
-    #[IsGranted('ROLE_ADMIN')]
-    #[Route('/admin/vuelosdisponibles', name: 'app_vuelodisponible')]
+    #[IsGranted('IS_AUTHENTICATED')]
+    #[Route('/profile/vuelosdisponibles', name: 'app_vuelodisponible')]
     public function vuelodiponible(Request $request, EntityManagerInterface $entityManager): Response
     {   
+        $tarifables=$this->tarifablesRepository->findAll();
+
         $origen = $request->request->get('origen');
         $destino = $request->request->get('destino');
+
         $fechaida = $request->request->get('fechaida');
-        $fechavuelta = $request->request->get('fechavuelta');
         $rutaida = $this->rutaRepository->findOneBy(['origen' => $origen, 'destino' => $destino]);
-        $rutavuelta = $this->rutaRepository->findOneBy(['origen' => $destino, 'destino' => $origen]);
         $fechaida = new DateTime($fechaida);
         $fechaFormateadaida = $fechaida->format('Y-m-d');
-        $fechavuelta = new DateTime($fechavuelta);
-        $fechaFormateadavuelta = $fechavuelta->format('Y-m-d');
-        
+
         $vuelosida = $this->vueloRepository->findBy([
             'ruta' => $rutaida,
         ]);
@@ -294,29 +292,47 @@ class VuelosController extends AbstractController
             }
         }
 
-        $vuelosvuelta = $this->vueloRepository->findBy([
-            'ruta' => $rutavuelta,
-        ]);
-
-        for ($i=0;$i<count($vuelosvuelta);$i++)
+        if ($request->request->get('fechavuelta')!=='')
         {
-            if($vuelosvuelta[$i]->getFechaSalida()->format("Y-m-d") != $fechaFormateadavuelta)
+            $fechavuelta = $request->request->get('fechavuelta');  
+            $rutavuelta = $this->rutaRepository->findOneBy(['origen' => $destino, 'destino' => $origen]);
+            $fechavuelta = new DateTime($fechavuelta);
+            $fechaFormateadavuelta = $fechavuelta->format('Y-m-d');
+    
+            $vuelosvuelta = $this->vueloRepository->findBy([
+                'ruta' => $rutavuelta,
+            ]);
+    
+            for ($i=0;$i<count($vuelosvuelta);$i++)
             {
-              array_splice($vuelosvuelta, $i, 1);
+                if($vuelosvuelta[$i]->getFechaSalida()->format("Y-m-d") != $fechaFormateadavuelta)
+                {
+                  array_splice($vuelosvuelta, $i, 1);
+                }
             }
+    
+            return $this->render('vuelosdisponibles.html.twig', [
+                'rutaida' => $rutaida,
+                'rutavuelta' => $rutavuelta,
+                'fechaida' => $fechaida,
+                'fechavuelta' => $fechavuelta,
+                'vuelosida' => $vuelosida,
+                'vuelosvuelta' => $vuelosvuelta,
+                'tarifables' => $tarifables,
+                'tipo' => 'idavuelta',
+            ]);
         }
-
-        $tarifables=$this->tarifablesRepository->findAll();
-
-        return $this->render('vuelosdisponibles.html.twig', [
-            'rutaida' => $rutaida,
-            'rutavuelta' => $rutavuelta,
-            'fechaida' => $fechaida,
-            'fechavuelta' => $fechavuelta,
-            'vuelosida' => $vuelosida,
-            'vuelosvuelta' => $vuelosvuelta,
-            'tarifables' => $tarifables,
-        ]);
+        else
+        {
+            return $this->render('vuelosdisponibles.html.twig', [
+                'rutaida' => $rutaida,
+                'fechaida' => $fechaida,
+                'vuelosida' => $vuelosida,
+                'tarifables' => $tarifables,
+                'tipo' => 'ida',
+            ]);
+        }
+        
     }
 
      

@@ -11,7 +11,7 @@
 
 </header>
 
-<section class="pt-100 cuerpo  d-flex flex-column">
+<section class="pt-100 cuerpo  d-flex flex-column fondoseccion">
 <h2 class="text-center colorblack">RESUMEN DE LA RESERVA</h2>
 <article class="cuadroresumen pt-100  d-flex">
     <article class="cuadroresumen col-lg-4 offset-lg-2">
@@ -28,6 +28,7 @@
         <h3>Descripcion: {{tarifa.descripcion}}</h3>
         <h3>Precio Añadido: {{tarifa.precio}}€</h3>
     </article>
+     {% if vuelovuelta is defined %}
     <article class="cuadroresumen col-lg-4 offset-lg-1">
         <h3>Vuelo Vuelta</h3>
         <h3>{{vuelovuelta.ruta}}</h3>
@@ -42,6 +43,7 @@
         <h3>Descripcion: {{tarifa.descripcion}}</h3>
         <h3>Precio Añadido: {{tarifa.precio}}€</h3>
     </article>
+    {% endif %}
 </article>
 <h2 class="pt-50 text-center colorblack">PRECIO TOTAL: {{preciototal}}€</h2>
 
@@ -49,12 +51,22 @@
     <form action="/checkout" method="POST">
         <input type="hidden" name="preciototal" value="{{preciototal}}"></input>
         <input type="hidden" name="vueloidaid" value="{{vueloida.id}}"></input>
+         <input type="hidden" name="asientoidaid" value="{{asientoelegidoIda.id}}"></input>
+          {% if vuelovuelta is defined %}
         <input type="hidden" name="vuelovueltaid" value="{{vuelovuelta.id}}"></input>
-        <input type="hidden" name="asientoidaid" value="{{asientoelegidoIda.id}}"></input>
         <input type="hidden" name="asientovueltaid" value="{{asientoelegidoVuelta.id}}"></input>
+          {% endif %}
         <input type="hidden" name="tarifaid" value="{{tarifa.id}}"></input>
         <button type="submit" class="btn btn-primary colorwhite">REALIZAR PAGO</button>
     </form>
 <div>
 </section>
+{% block footer %}
+       {# <footer class="footer">            
+                <p>Copyright <script>document.write(new Date().getFullYear())</script> &copy; <a href="http://www.devcrud.com">Xokas and co</a></p>
+            </footer>#}
+            <div class="fondoseccion text-center footer-pd">
+                AIRES
+            </div>
+{% endblock %}
 {% endblock %}

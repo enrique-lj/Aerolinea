@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mi perfil{% endblock %}
+
+{% block body %}
+{{ parent() }}
+<header>
+
+</header>
+<section class="pt-150  cuerpo fondoseccion">
+
+<h1 class="text-center">Mi Perfil</h1>
+
+<article class="d-flex flex-row-reverse justify-content-around col-lg-10 cajaperfil offset-1 mt-5">
+<div class="pt-50 border cajaperfil col-lg-4  bg-dark borderradius">
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email, {disabled : 'true', attr : {value : usuario.email , class : 'borderradius textdisablebg'}})}}
+        {{ form_row(registrationForm.plainPassword, {label : 'Password',disabled : 'true', attr : {value : usuario.password}}) }}
+        {{ form_row(registrationForm.dni, {disabled : 'true', attr : {value : usuario.dni}}) }}
+        {{ form_row(registrationForm.nombre, {disabled : 'true', attr : {value : usuario.nombre}}) }}
+        {{ form_row(registrationForm.apellido1, {disabled : 'true', attr : {value : usuario.apellido1}}) }}
+        {{ form_row(registrationForm.apellido2, {disabled : 'true', attr : {value : usuario.apellido2}}) }}
+ <a class="btn btn-primary mb-4 float-right" href="/profile/editarperfil/{{usuario.id}}">Editar Perfil</a>
+        {{ form_end(registrationForm) }}    
+</div>
+
+</article>
+</section>
+{% block footer %}
+       {# <footer class="footer">            
+                <p>Copyright <script>document.write(new Date().getFullYear())</script> &copy; <a href="http://www.devcrud.com">Xokas and co</a></p>
+            </footer>#}
+            <div class="fondoseccion text-center footer-pd">
+                AIRES
+            </div>
+{% endblock %}
+{% endblock %}

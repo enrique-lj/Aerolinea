@@ -11,9 +11,9 @@
 
 </header>
 
-<section class="pt-150 cuerpo">
+<section class="pt-150 cuerpo fondoseccion">
 
-<div class="col-lg-3 col-md-6 col-8 offset-4 border borderradius bg-secondary">
+<div class="col-lg-3 col-md-6 col-8 offset-lg-4 offset-md-3 offset-sm-2 border borderradius bg-secondary">
 <h1 class="text-center text-primary">{{titulo}} Avión</h1>
     {{ form_start(nuevoavionForm) }}
         {{ form_row(nuevoavionForm.codigo) }}
@@ -25,4 +25,12 @@
 </div>
 
 </section>
+{% block footer %}
+       {# <footer class="footer">            
+                <p>Copyright <script>document.write(new Date().getFullYear())</script> &copy; <a href="http://www.devcrud.com">Xokas and co</a></p>
+            </footer>#}
+            <div class="fondoseccion text-center footer-pd">
+                AIRES
+            </div>
+{% endblock %}
 {% endblock %}
