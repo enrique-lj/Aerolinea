@@ -1,5 +1,7 @@
 function montarAirbus(contenedor)
 {
+    $('#airbusines').remove();
+    $('#airresto').remove();
     $('#boinbusines').remove();
     $('#boinresto').remove();
     
@@ -93,6 +95,8 @@ function montarAirbus(contenedor)
 
 function montarBoeing(contenedor)
 {
+    $('#boinbusines').remove();
+    $('#boinresto').remove();
         $('#airbusines').remove();
         $('#airresto').remove();
 
@@ -208,7 +212,7 @@ function montarBoeing(contenedor)
 
 function asignarAsientos(idvuelo)
 {
-    $.getJSON("/admin/apiasiento/dameasientos/"+idvuelo, function(asientos) {    
+    $.getJSON("/apiasiento/dameasientos/"+idvuelo, function(asientos) {    
         var elem= $('.asiento');
         for(var i=0;i<elem.length;i++)
         {
@@ -222,19 +226,31 @@ function asignarAsientos(idvuelo)
 
         $('.asiento').dblclick(function() 
         {
+
             var id = $(this).attr('id');
+           
             const partes = id.split("-");
                 const variable1 = partes[0];
                 const variable2 = partes[1];
                 const variable3 = partes[2];
-             $('#asientoida').attr('id',variable1);
-             $('#columnaida').text(variable3);
-             $('#filaida').text(variable2);
-             $('.btnVuelta').attr('id',id+"-regular").fadeIn().dblclick(function() {
-                    AsientoIda=id;
-                    $('#exampleModalCenter').fadeOut();
-                    $('#exampleModalCenter').fadeIn();
-              });
+
+            if (asientoidaconfirmado == false)
+            {
+                AsientoIda=variable1;
+                $('#asientoida').attr('id',variable1);
+                $('#columnaida').text(variable3);
+                $('#filaida').text(variable2);
+                $('.btnVuelta').attr('id',id+"-regular").fadeIn();
+            }
+            else if (asientoidaconfirmado == true)
+            {
+                AsientoVuelta=variable1;
+                $('#asientoida').attr('id',variable1);
+                $('#columnaida').text(variable3);
+                $('#filaida').text(variable2);
+                $('#btncontinuarvuelta').fadeIn();
+            }
+            
 
             
         });
@@ -244,7 +260,7 @@ function asignarAsientos(idvuelo)
 
 function asignarAsientosBusiness(idvuelo)
 {
-    $.getJSON("/admin/apiasiento/dameasientos/"+idvuelo, function(asientos) {    
+    $.getJSON("/apiasiento/dameasientos/"+idvuelo, function(asientos) {    
         var elem= $('.asiento');
         for(var i=0;i<elem.length;i++)
         {
@@ -255,18 +271,34 @@ function asignarAsientosBusiness(idvuelo)
                 $('#'+asientos['data'][i]['fila']+'-'+asientos['data'][i]['columna']).css('background-color', 'red').off('mouseenter mouseleave');
             }
         } 
+
+
         
         $('.asiento').dblclick(function() 
         {
+            
             var id = $(this).attr('id');
             const partes = id.split("-");
                 const variable1 = partes[0];
                 const variable2 = partes[1];
                 const variable3 = partes[2];
-             $('#asientoida').attr('id',variable1);
-             $('#columnaida').text(variable3);
-             $('#filaida').text(variable2);
-             $('.btnVuelta').attr('id',id+"-business").fadeIn();
+               
+                if (asientoidaconfirmado == false)
+                {
+                    AsientoIda=variable1;
+                    $('#asientoida').attr('id',variable1);
+                    $('#columnaida').text(variable3);
+                    $('#filaida').text(variable2);
+                    $('.btnVuelta').attr('id',id+"-regular").fadeIn();
+                }
+                else if (asientoidaconfirmado == true)
+                {
+                    AsientoVuelta=variable1;
+                    $('#asientoida').attr('id',variable1);
+                    $('#columnaida').text(variable3);
+                    $('#filaida').text(variable2);
+                    $('#btncontinuarvuelta').fadeIn();
+                }
               
         });
     });  

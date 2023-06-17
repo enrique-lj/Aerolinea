@@ -1,6 +1,24 @@
 $(function(){
     $( "#ida" ).checkboxradio();
     $( "#idavuelta" ).checkboxradio();
+
+    $( "#idavuelta" ).change(function() {
+        if ($(this).is(":checked")) {
+          $( "#datepickervuelta" ).fadeIn();
+          $( "#labeldatepickervuelta" ).fadeIn();
+        } else {
+          $( "#datepickervuelta" ).fadeOut();
+          $( "#labeldatepickervuelta" ).fadeOut();
+        }
+      });
+    
+      $( "#ida" ).change(function() {
+        if ($(this).is(":checked")) {
+          $( "#datepickervuelta" ).fadeOut();
+          $( "#labeldatepickervuelta" ).fadeOut();
+        }
+      });
+
     $( "#origen" ).selectmenu({width:'450px'},{height:'200px'},{select: function( event, ui ) {
        
         var select=$( "#destino" ).selectmenu(['select#destino']);
